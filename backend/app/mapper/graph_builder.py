@@ -24,14 +24,15 @@ logger = logging.getLogger(__name__)
 # Config path relative to project root
 CONFIG_DIR = Path(__file__).parent.parent.parent.parent / "config"
 
-# Known Online Boutique service wiring (fallback)
+# Known Fleet Management System service wiring (telematics, alerts, tracking)
 KNOWN_DEPENDENCIES = {
-    "frontend": ["cartservice", "productcatalogservice", "currencyservice",
-                  "shippingservice", "recommendationservice", "adservice", "checkoutservice"],
-    "checkoutservice": ["cartservice", "productcatalogservice", "currencyservice",
-                        "shippingservice", "paymentservice", "emailservice"],
-    "recommendationservice": ["productcatalogservice"],
-    "cartservice": ["redis-cart"],
+    "dashboard-api": ["vehicle-manager", "alert-engine", "tracking-service"],
+    "telematics-ingest": ["alert-engine", "fleet-db", "gps-tracker"],
+    "alert-engine": ["fleet-db", "dtc-analyzer", "notification-service"],
+    "tracking-service": ["fleet-db", "gps-tracker", "geofence-monitor"],
+    "vehicle-manager": ["fleet-db"],
+    "dtc-analyzer": ["fleet-db"],
+    "telematics-simulator": ["telematics-ingest"],
 }
 
 

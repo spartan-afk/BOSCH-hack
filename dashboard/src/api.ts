@@ -1,59 +1,65 @@
+// Fleet Management API client — runtime only (types in types.ts)
+import type { FleetStatus, Vehicle, Alert, VehicleDetail } from "./types";
+
 export const API_URL = "http://localhost:8000/api";
 
-export async function fetchGraph() {
-  const res = await fetch(`${API_URL}/graph`);
-  return res.json();
-}
+// ── HTTP helpers ─────────────────────────────────────────────────────────────
 
-export async function fetchHealth() {
-  const res = await fetch(`${API_URL}/health`);
-  return res.json();
-}
-
-export async function fetchPlan() {
-  const res = await fetch(`${API_URL}/plan`);
-  return res.json();
-}
-
-export async function runExperiment(spec: Record<string, unknown> | any) {
-  const validateRes = await fetch(`${API_URL}/experiments`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(spec),
-  });
-  const validateData = await validateRes.json();
-  if (validateData.status !== "validated") {
-    throw new Error(`Validation failed: ${validateData.reasons?.join(", ")}`);
+async function get<T>(path: string): Promise<T | null> {
+  try {
+    const res = await fetch(`${API_URL}${path}`);
+    if (!res.ok) return null;
+    return (await res.json()) as T;
+  } catch {
+    return null;
   }
-
-  const runRes = await fetch(`${API_URL}/experiments/${validateData.experiment_id}/run`, {
-    method: "POST",
-  });
-  return runRes.json();
 }
 
-export async function killSwitch() {
-  const res = await fetch(`${API_URL}/kill`, { method: "POST" });
-  return res.json();
+async function post<T>(path: string, body?: unknown): Promise<T | null> {
+  try {
+    const res = await fetch(`${API_URL}${path}`, {
+      method: "POST",
+      headers: body ? { "Content-Type": "application/json" } : {},
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    if (!res.ok) return null;
+    return (await res.json()) as T;
+  } catch {
+    return null;
+  }
 }
 
-export async function orchestrateAgent(targetService?: string, autoApprove: boolean = false) {
-  const res = await fetch(`${API_URL}/agent/orchestrate`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ target_service: targetService, auto_approve: autoApprove }),
-  });
-  return res.json();
+async function put<T>(path: string): Promise<T | null> {
+  try {
+    const res = await fetch(`${API_URL}${path}`, { method: "PUT" });
+    if (!res.ok) return null;
+    return (await res.json()) as T;
+  } catch {
+    return null;
+  }
 }
 
-export async function approveAgent(threadId: string) {
-  const res = await fetch(`${API_URL}/agent/${threadId}/approve`, {
-    method: "POST",
-  });
-  return res.json();
-}
+// ── Fleet API ─────────────────────────────────────────────────────────────────
 
-export async function getAgentState(threadId: string) {
-  const res = await fetch(`${API_URL}/agent/${threadId}/state`);
-  return res.json();
-}
+export const fleetApi = {
+  getStatus: () => get<FleetStatus>("/fleet/status"),
+  getVehicles: () => get<Vehicle[]>("/fleet/vehicles"),
+  getVehicleDetail: (id: number) => get<VehicleDetail>(`/fleet/vehicles/${id}`),
+  getAlerts: (opts?: { severity?: string; unacknowledged_only?: boolean; limit?: number }) => {
+    const params = new URLSearchParams();
+    if (opts?.severity) params.set("severity", opts.severity);
+    if (opts?.unacknowledged_only) params.set("unacknowledged_only", "true");
+    if (opts?.limit) params.set("limit", String(opts.limit));
+    const qs = params.toString();
+    return get<Alert[]>(`/fleet/alerts${qs ? `?${qs}` : ""}`);
+  },
+  acknowledgeAlert: (id: number) =>
+    put<{ status: string; alert_id: number }>(`/fleet/alerts/${id}/acknowledge`),
+  toggleSimulation: () =>
+    post<{ status: string; simulation_running: boolean }>("/fleet/simulate/toggle"),
+  triggerAnomaly: (vehicle_id: number, anomaly_type: string) =>
+    post<{ status: string; alerts_triggered: number; alerts: { type: string; severity: string; message: string }[] }>(
+      "/fleet/simulate/anomaly",
+      { vehicle_id, anomaly_type }
+    ),
+};

@@ -1,9 +1,17 @@
 # Allowed namespaces for chaos injection
 namespaces:
+  - fleet
   - boutique
 
 # Allowed services for chaos injection
 services:
+  - telematics-ingest
+  - alert-engine
+  - tracking-service
+  - dtc-analyzer
+  - vehicle-manager
+  - telematics-simulator
+  - gps-tracker
   - frontend
   - checkoutservice
   - cartservice

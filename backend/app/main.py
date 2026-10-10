@@ -34,13 +34,22 @@ runner = None
 analyzer = None
 
 
+from app.fleet.routes import fleet_engine, router as fleet_router
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Lifecycle manager for the FastAPI app."""
     global k8s_client, probe, mapper, safety, runner, analyzer
 
-    logger.info("Initializing chaos platform components...")
+    logger.info("Initializing chaos platform and fleet components...")
     
+    # Initialize and start Fleet Management Engine (telematics + alert engine)
+    try:
+        fleet_engine.initialize()
+        await fleet_engine.start()
+    except Exception as e:
+        logger.error(f"Failed to initialize fleet engine: {e}")
+
     try:
         k8s_client = K8sClient()
     except Exception as e:
@@ -76,19 +85,20 @@ async def lifespan(app: FastAPI):
     if probe:
         probe.start()
         
-    logger.info("Chaos platform ready.")
+    logger.info("Chaos platform and Fleet engine ready.")
     
     yield
     
-    logger.info("Shutting down chaos platform...")
+    logger.info("Shutting down chaos platform and fleet engine...")
+    await fleet_engine.stop()
     if probe:
         await probe.stop()
 
 
 app = FastAPI(
-    title="Chaos Platform",
-    description="AI Chaos Engineering Platform for Online Boutique",
-    version="0.1.0",
+    title="Autonomous Fleet Resilience & Chaos Platform",
+    description="Automotive Fleet Management, Real-Time Telematics, Alerts & AI Chaos Engineering",
+    version="1.0.0",
     lifespan=lifespan,
 )
 
@@ -102,6 +112,7 @@ app.add_middleware(
 )
 
 app.include_router(router)
+app.include_router(fleet_router, prefix="/api")
 
 
 if __name__ == "__main__":
