@@ -1,0 +1,95 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>Chaos Run Report</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#14171c;--muted:#5d6672;--line:#e3e6ea;--accent:#3e63dd;
+--bad:#d93036;--warn:#c27c0e;--good:#18794e;--band:rgba(217,48,54,.08);--chip:#eef1f5}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1216;--card:#171b21;--ink:#e8eaed;--muted:#99a2ad;
+--line:#2a3039;--accent:#7b9bff;--bad:#ff6369;--warn:#f1a10d;--good:#3dd68c;--band:rgba(255,99,105,.10);--chip:#222833}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);
+font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:28px 16px 48px}
+h1{font-size:26px;margin:0 0 4px}h2{font-size:17px;margin:0 0 12px}
+.muted,.sub{color:var(--muted)}.sub{margin:0 0 20px;font-size:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;margin:16px 0}
+.finding{border-left:5px solid var(--bad)}.finding .k{font-size:12px;font-weight:700;letter-spacing:.06em;
+text-transform:uppercase;color:var(--bad)}.finding p{font-size:19px;font-weight:600;margin:6px 0 0}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.tl{font-size:12px;color:var(--muted)}.tv{font-size:28px;font-weight:700;margin:2px 0}.ts{font-size:12px;color:var(--muted)}
+.tile.bad .tv{color:var(--bad)}.tile.warn .tv{color:var(--warn)}.tile.good .tv{color:var(--good)}
+svg{width:100%;height:auto}.grid{stroke:var(--line)}.tick{fill:var(--muted);font-size:11px}
+.band{fill:var(--band)}.bandlabel{fill:var(--bad);font-size:11px;font-weight:600}
+.thr{stroke:var(--muted);stroke-dasharray:5 4}.thrlabel{fill:var(--muted);font-size:11px}
+polyline{fill:none;stroke-width:2.5;stroke-linejoin:round}polyline.real{stroke:var(--bad)}polyline.seen{stroke:var(--accent)}
+.legend{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:6px}
+.sw{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.sw.real{background:var(--bad)}.sw.seen{background:var(--accent)}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.step{border:1px solid var(--line);border-radius:10px;padding:14px}.step h3{font-size:14px;margin:0 0 6px}
+.step .n{display:inline-block;width:22px;height:22px;border-radius:50%;background:var(--chip);text-align:center;
+font-size:12px;line-height:22px;margin-right:6px}.step p{margin:4px 0;font-size:13.5px}
+.ai{font-size:11px;font-weight:700;color:#fff;background:#8e4ec6;border-radius:4px;padding:1px 6px;margin-left:6px}
+.code{font-size:11px;font-weight:700;color:#fff;background:#0d74ce;border-radius:4px;padding:1px 6px;margin-left:6px}
+.src{font-size:11px;border-radius:4px;padding:1px 6px;background:var(--chip);color:var(--muted)}
+.src.fallback{color:var(--warn)}
+.chip{display:inline-block;background:var(--chip);border-radius:6px;padding:3px 8px;margin:2px;font-size:12.5px}
+.chip small{color:var(--muted);margin-left:4px}.crit5,.crit4{outline:1px solid var(--bad)}
+.flow{font-size:12.5px;margin-top:6px}.flow span{color:var(--muted)}
+.tablewrap{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{text-align:left;padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:12px}tr.chosen td{background:var(--chip)}
+.fix{border-left:5px solid var(--good)}.where{font-family:ui-monospace,Consolas,monospace;font-size:13px;
+background:var(--chip);padding:2px 6px;border-radius:4px}ul{margin:0;padding-left:20px}li{margin:4px 0}
+</style></head><body><main>
+<h1>Chaos Engineering Report: Fleet Management System</h1>
+<p class="sub">Run <b>day1-20261010-155041</b> · 2000 ms network latency on
+<b>loadgen-&gt;fleet-api</b> · Ran to planned end (30.7 s) · generated 2026-10-10 15:53
+ · model openai/gpt-oss-120b</p>
+
+<div class="card finding"><div class="k">Key finding</div><p>The app showed truck data that was really 2.04 s old while believing it was 0.39 s old, and raised 0 alerts.</p><p class='muted' style='font-size:14px;font-weight:400;margin-top:8px'><b>Analyst (AI):</b> data_age_s mean rose to 2.043 s while server_age_s mean was only 0.388 s, yielding a hidden_delay_s of 1.655 s; because the app does not store client timestamps it cannot see the true staleness of telemetry, resulting in potentially stale data being presented without any alert</p></div>
+
+<div class="tiles"><div class='tile bad'><div class='tl'>Real data age</div><div class='tv'>2.04 s</div><div class='ts'>avg during fault · max 2.61 s</div></div><div class='tile warn'><div class='tl'>App believed</div><div class='tv'>0.39 s</div><div class='ts'>avg · blind to 1.66 s</div></div><div class='tile '><div class='tl'>Alerts raised by app</div><div class='tv'>0</div><div class='ts'>during the fault</div></div><div class='tile '><div class='tl'>Failed requests</div><div class='tv'>0</div><div class='ts'>of 0 writes</div></div><div class='tile good'><div class='tl'>Recovery</div><div class='tv'>0.4 s</div><div class='ts'>after rollback</div></div></div>
+
+<div class="card"><h2>What happened to data freshness</h2><svg viewBox='0 0 920 320' role='img' aria-label='Data age over time'><rect class='band' x='309.0' y='18' width='414.7' height='262'/><text class='bandlabel' x='315.0' y='32'>delay injected</text><line class='grid' x1='52' x2='904' y1='280.0' y2='280.0'/><text class='tick' x='44' y='284.0' text-anchor='end'>0s</text><line class='grid' x1='52' x2='904' y1='221.5' y2='221.5'/><text class='tick' x='44' y='225.5' text-anchor='end'>1s</text><line class='grid' x1='52' x2='904' y1='163.0' y2='163.0'/><text class='tick' x='44' y='167.0' text-anchor='end'>2s</text><line class='grid' x1='52' x2='904' y1='104.6' y2='104.6'/><text class='tick' x='44' y='108.6' text-anchor='end'>3s</text><line class='grid' x1='52' x2='904' y1='46.1' y2='46.1'/><text class='tick' x='44' y='50.1' text-anchor='end'>4s</text><line class='thr' x1='52' x2='904' y1='46.1' y2='46.1'/><text class='thrlabel' x='900' y='40.1' text-anchor='end'>guard stops at 4s</text><text class='tick' x='173.7' y='298' text-anchor='middle'>-10s</text><text class='tick' x='309.0' y='298' text-anchor='middle'>+0s</text><text class='tick' x='444.2' y='298' text-anchor='middle'>+10s</text><text class='tick' x='579.4' y='298' text-anchor='middle'>+20s</text><text class='tick' x='714.7' y='298' text-anchor='middle'>+30s</text><text class='tick' x='849.9' y='298' text-anchor='middle'>+40s</text><text class='tick' x='486.0' y='316' text-anchor='middle'>seconds relative to injection</text><polyline class='real' points='52.0,265.7 79.0,270.8 106.1,268.1 119.6,263.2 133.1,255.3 146.7,249.3 173.7,258.2 200.8,254.4 227.8,257.5 241.3,262.0 268.4,268.0 281.9,271.6 309.0,269.8 336.0,181.3 363.0,131.0 390.1,136.8 403.6,177.1 417.1,162.3 444.2,148.5 471.2,133.2 484.8,138.5 511.8,147.2 525.3,143.7 538.9,143.9 552.4,130.2 565.9,180.1 593.0,145.3 606.5,140.8 620.0,186.9 633.5,163.5 660.6,157.1 674.1,132.0 701.1,127.2 728.2,153.8 755.2,266.6 768.8,263.2 782.3,254.5 809.3,258.1 822.9,251.9 836.4,253.0 849.9,260.6 877.0,261.8 904.0,272.2'/><polyline class='seen' points='52.0,267.3 79.0,271.9 106.1,269.7 119.6,263.8 133.1,258.0 146.7,250.5 173.7,259.9 200.8,255.3 227.8,259.1 241.3,263.0 268.4,271.9 281.9,272.7 309.0,271.0 336.0,151.3 363.0,249.4 390.1,255.1 403.6,264.2 417.1,249.2 444.2,258.4 471.2,251.8 484.8,247.6 511.8,265.1 525.3,262.8 538.9,262.3 552.4,249.6 565.9,267.5 593.0,263.7 606.5,259.1 620.0,274.4 633.5,250.2 660.6,275.5 674.1,250.5 701.1,245.3 728.2,261.8 755.2,267.7 768.8,246.8 782.3,255.1 809.3,258.9 822.9,253.6 836.4,254.7 849.9,261.6 877.0,262.9 904.0,245.1'/></svg><div class='legend'><span><i class='sw real'></i>Real data age (measured by us)</span><span><i class='sw seen'></i>What the app believes (its own timestamp)</span></div>
+<p class="muted" style="font-size:13px;margin:8px 0 0">The red line is how old the truck data on screen really was.
+The blue line is how old the app thought it was. When they split apart, the app is showing old data as fresh.</p></div>
+
+<div class="card"><h2>How the run worked</h2><div class="steps">
+<div class="step"><h3><span class="n">1</span>Map the system<span class="ai">AI</span> </h3>
+<p>5 services, 4 links found.</p><div><span class='chip crit5'>fleet-api<small>crit 5</small></span><span class='chip crit1'>toxiproxy<small>crit 1</small></span><span class='chip crit1'>fleet-simulator<small>crit 1</small></span><span class='chip crit1'>loadgen<small>crit 1</small></span><span class='chip crit4'>sqlite-db<small>crit 4</small></span></div><div class='flow'>loadgen <span>→</span> toxiproxy <span>→</span> fleet-api <span>→</span> sqlite-db</div><div class='flow'>fleet-simulator <span>→</span> fleet-api <span>→</span> sqlite-db</div></div>
+<div class="step"><h3><span class="n">2</span>Measure normal<span class="code">CODE</span></h3>
+<p>Baseline: data age 0.54 s avg, 0 errors,
+read p95 45.3 ms.</p></div>
+<div class="step"><h3><span class="n">3</span>Plan experiments<span class="ai">AI</span> </h3>
+<p>2 experiments proposed, ranked most informative first.</p><p><b>Hypothesis:</b> Injecting 2 s latency will increase observer data_age to ~2.5 s, keep error_rate &lt;5 %, and delay generation of speed‑related alerts by roughly the added latency, observable as a ~2 s lag between telemetry receipt and alert appearance.</p></div>
+<div class="step"><h3><span class="n">4</span>Safety gate<span class="code">CODE</span></h3>
+<ul><li>Hard limits checked: ≤15000 ms, ≤60 s, one allowed link</li><li>Pre-flight: app healthy, no fault active</li>
+<li>Guard stops at data age &gt; 4 s for 5 s</li></ul></div>
+<div class="step"><h3><span class="n">5</span>Inject, watch, roll back<span class="code">CODE</span></h3>
+<p>2000 ms delay for 30.7 s. max duration 30s reached.</p>
+<p>Rollback: removed fleet_api_ingest/chaos_latency.
+Recovered in 0.4 s.</p></div>
+<div class="step"><h3><span class="n">6</span>Analyse<span class="ai">AI</span> </h3>
+<p><b>Hypothesis held:</b> partially. data_age_s increased to ~2.0 s (close to the expected ~2.5 s) and error_rate remained 0.0 % (&lt;5 %), but no speed‑related alerts were generated, so the expected alert‑delay effect could not be verified</p></div>
+</div></div>
+
+<div class="card fix"><h2>Recommended fix</h2><p>Store the client‑provided telemetry timestamp and use it when calculating data_age so the app can detect stale data</p>
+<p>Where: <span class="where">api/telemetry.py</span></p></div>
+
+<div class="card"><h2>Measurements</h2><div class="tablewrap"><table>
+<tr><th>Metric</th><th>Baseline</th><th>During fault</th><th>After rollback</th></tr><tr><td>Real data age, mean</td><td>0.54 s</td><td>2.04 s</td><td>0.28 s</td></tr><tr><td>Real data age, max</td><td>1.14 s</td><td>2.61 s</td><td>0.56 s</td></tr><tr><td>App-believed age, mean</td><td>0.51 s</td><td>0.39 s</td><td>0.28 s</td></tr><tr><td>Write latency p95 (through proxy)</td><td>97.4 ms</td><td>n/a</td><td>n/a</td></tr><tr><td>Read latency p95 (dashboard API)</td><td>45.3 ms</td><td>54.4 ms</td><td>124.2 ms</td></tr><tr><td>Read error rate</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>Alerts raised by the app</td><td>n/a</td><td>0</td><td>0</td></tr>
+</table></div></div>
+
+<div class="card"><h2>Experiments proposed by the planner</h2><div class="tablewrap"><table>
+<tr><th>#</th><th>Experiment</th><th>Latency</th><th>Duration</th><th>Hypothesis</th></tr><tr class='chosen'><td>1</td><td>exp1 <b>▶ run</b></td><td>2000 ms</td><td>30 s</td><td>Injecting 2 s latency will increase observer data_age to ~2.5 s, keep error_rate &lt;5 %, and delay generation of speed‑related alerts by roughly the added latency, observable as a ~2 s lag between telemetry receipt and alert appearance.</td></tr><tr class=''><td>2</td><td>exp2</td><td>6000 ms</td><td>30 s</td><td>Injecting 6 s latency will push data_age mean above 5 s while the app still has no offline detection; we expect no device_offline alerts but a hidden_delay (data_age – server_age) of ~5 s, confirming that the alert engine uses server_age not client‑visible age.</td></tr></table></div></div>
+
+<div class="card"><h2>Safety evidence</h2><ul>
+<li>Agents cannot inject faults: every plan passes code-enforced hard limits first.</li>
+<li>Rollback runs in a <code>finally</code> block and on Ctrl+C; safe to run twice.</li>
+<li>Kill switch: <code>python -m chaos.run abort</code> removes all faults from any terminal.</li>
+<li>Only containers of this Compose project are touched.</li><li><b>Guard test</b> (guard-test-20261010-144848): 10000 ms injected, guard aborted by itself at t=9.9 s; recovered in 3 s.</li></ul></div>
+
+<p class="muted" style="font-size:12px">AI agents reason and decide; code measures, injects and enforces safety.
+Every agent decision is logged in chaos/data/decisions.jsonl.</p>
+</main></body></html>

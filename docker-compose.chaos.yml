@@ -1,0 +1,21 @@
+# Chaos-engineering override. Use together with the app's compose file:
+#   docker compose -f docker-compose.yml -f docker-compose.chaos.yml up -d --build
+
+services:
+  fleet-api:
+    build:
+      # Pinned dependencies; fixes the dashboard 500 without touching app code.
+      dockerfile: chaos/docker/fleet-api.Dockerfile
+
+  # Toxiproxy sits in front of fleet-api's ingestion path. Proxies and toxics are
+  # created at runtime by chaos/executor.py through the API on 8474.
+  # loadgen -> localhost:18000 -> toxiproxy -> fleet-api:8000
+  toxiproxy:
+    image: ghcr.io/shopify/toxiproxy:2.9.0
+    container_name: fleet-toxiproxy
+    restart: unless-stopped
+    depends_on:
+      - fleet-api
+    ports:
+      - "8474:8474"     # Toxiproxy control API
+      - "18000:18000"   # proxied ingestion port for loadgen

@@ -1,0 +1,160 @@
+{
+  "run_id": "guard-test-20261010-144848",
+  "executed_plan": {
+    "id": "guard-test",
+    "target_link": "loadgen->fleet-api",
+    "latency_ms": 10000,
+    "duration_s": 60,
+    "hypothesis": "With 10000 ms added on ingestion, vehicle data age rises above 8 s and the guard aborts the run before its 60 s end.",
+    "expected_blast_radius": [
+      "fleet-api ingestion",
+      "vehicle state freshness",
+      "alerting"
+    ],
+    "reason": "Fixed guard test (Step 3).",
+    "abort_thresholds": {
+      "max_data_age_s": 8,
+      "consecutive_s": 3,
+      "max_error_rate": 0.5,
+      "max_p95_latency_ms": 5000
+    },
+    "injected_for_s": 10.0,
+    "warmup_s": 20
+  },
+  "metrics": {
+    "baseline": {
+      "error_rate": 0.0,
+      "latency_ms": {
+        "p50": 30.1,
+        "p95": 55.7
+      },
+      "data_age_s": {
+        "mean": 0.981,
+        "max": 1.107
+      },
+      "server_age_s": {
+        "mean": 0.939,
+        "max": 1.074
+      },
+      "writes": {
+        "sent": 903,
+        "ok": 900,
+        "failed": 0,
+        "unfinished": 3,
+        "error_rate": 0.0,
+        "latency_ms": {
+          "p50": 62.5,
+          "p95": 95.4
+        }
+      }
+    },
+    "before": {
+      "samples": 60,
+      "error_rate": 0.0,
+      "latency_ms": {
+        "p50": 30.3,
+        "p95": 49.3
+      },
+      "data_age_s": {
+        "mean": 1.9,
+        "max": 18.945
+      },
+      "server_age_s": {
+        "mean": 1.858,
+        "max": 18.909
+      },
+      "writes": {
+        "sent": 60,
+        "ok": 60,
+        "failed": 0,
+        "unfinished": 0,
+        "error_rate": 0.0,
+        "latency_ms": {
+          "p50": 65.5,
+          "p95": 88.5
+        }
+      }
+    },
+    "during": {
+      "samples": 30,
+      "error_rate": 0.0,
+      "latency_ms": {
+        "p50": 33.9,
+        "p95": 47.8
+      },
+      "data_age_s": {
+        "mean": 5.524,
+        "max": 10.01
+      },
+      "server_age_s": {
+        "mean": 5.465,
+        "max": 9.968
+      },
+      "writes": {
+        "sent": 30,
+        "ok": 30,
+        "failed": 0,
+        "unfinished": 0,
+        "error_rate": 0.0,
+        "latency_ms": {
+          "p50": 4286.7,
+          "p95": 9092.4
+        }
+      }
+    },
+    "after": {
+      "samples": 45,
+      "error_rate": 0.0,
+      "latency_ms": {
+        "p50": 33.0,
+        "p95": 42.8
+      },
+      "data_age_s": {
+        "mean": 1.506,
+        "max": 8.988
+      },
+      "server_age_s": {
+        "mean": 0.986,
+        "max": 1.907
+      },
+      "writes": {
+        "sent": 45,
+        "ok": 42,
+        "failed": 0,
+        "unfinished": 3,
+        "error_rate": 0.0,
+        "latency_ms": {
+          "p50": 72.2,
+          "p95": 104.1
+        }
+      }
+    }
+  },
+  "app_alerts": {
+    "before": {
+      "none": 0
+    },
+    "during": {
+      "none": 0
+    },
+    "after": {
+      "none": 0
+    }
+  },
+  "recovery_time_s": 3.0,
+  "recovery_threshold_data_age_s": 2.66,
+  "guard_events": [
+    {
+      "t_s": 9.9,
+      "type": "abort",
+      "reason": "data_age 10.01s exceeded 8s for 3 consecutive seconds at t=10s"
+    }
+  ],
+  "rollback": {
+    "ok": true,
+    "removed_toxics": [
+      "fleet_api_ingest/chaos_latency"
+    ]
+  },
+  "notes": "data_age_s = now - client event time of the state the app shows. server_age_s = now - the app's own last_telemetry_at. latency_ms = observer read latency (direct, not proxied); writes.latency_ms = loadgen round trip through the proxy."
+}

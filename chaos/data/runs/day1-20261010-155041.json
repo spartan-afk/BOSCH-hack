@@ -1,0 +1,308 @@
+{
+  "run_id": "day1-20261010-155041",
+  "observer_sampling": "random_phase",
+  "executed_plan": {
+    "id": "exp1",
+    "target_link": "loadgen->fleet-api",
+    "latency_ms": 2000,
+    "duration_s": 30,
+    "hypothesis": "Injecting 2\u202fs latency will increase observer data_age to ~2.5\u202fs, keep error_rate <5\u202f%, and delay generation of speed\u2011related alerts by roughly the added latency, observable as a ~2\u202fs lag between telemetry receipt and alert appearance.",
+    "expected_blast_radius": [
+      "fleet-api",
+      "sqlite-db",
+      "alert_engine"
+    ],
+    "abort_thresholds": {
+      "max_data_age_s": 4.0,
+      "consecutive_s": 5,
+      "max_error_rate": 0.2,
+      "max_p95_latency_ms": 200.0
+    },
+    "reason": "2\u202fs is below the 30\u202fs client timeout but above the 1\u202fs update interval, allowing us to see if alert evaluation is delayed without triggering aborts.",
+    "injected_for_s": 30.7,
+    "warmup_s": 20
+  },
+  "metrics": {
+    "baseline": {
+      "error_rate": 0.0,
+      "latency_ms": {
+        "p50": 25.6,
+        "p95": 45.3
+      },
+      "data_age_s": {
+        "mean": 0.541,
+        "max": 1.137
+      },
+      "server_age_s": {
+        "mean": 0.508,
+        "max": 1.12
+      },
+      "writes": {
+        "sent": 900,
+        "ok": 900,
+        "failed": 0,
+        "unfinished": 0,
+        "error_rate": 0.0,
+        "latency_ms": {
+          "p50": 61.7,
+          "p95": 97.4
+        }
+      }
+    },
+    "before": {
+      "samples": 60,
+      "error_rate": 0.0,
+      "latency_ms": {
+        "p50": 30.3,
+        "p95": 53.1
+      },
+      "data_age_s": {
+        "mean": 0.225,
+        "max": 0.525
+      },
+      "server_age_s": {
+        "mean": 0.193,
+        "max": 0.505
+      },
+      "writes": {
+        "sent": 0,
+        "ok": 0,
+        "failed": 0,
+        "unfinished": 0,
+        "error_rate": null,
+        "latency_ms": {
+          "p50": null,
+          "p95": null
+        }
+      }
+    },
+    "during": {
+      "samples": 90,
+      "error_rate": 0.0,
+      "latency_ms": {
+        "p50": 28.5,
+        "p95": 54.4
+      },
+      "data_age_s": {
+        "mean": 2.043,
+        "max": 2.612
+      },
+      "server_age_s": {
+        "mean": 0.388,
+        "max": 2.2
+      },
+      "writes": {
+        "sent": 0,
+        "ok": 0,
+        "failed": 0,
+        "unfinished": 0,
+        "error_rate": null,
+        "latency_ms": {
+          "p50": null,
+          "p95": null
+        }
+      }
+    },
+    "after": {
+      "samples": 39,
+      "error_rate": 0.0,
+      "latency_ms": {
+        "p50": 34.1,
+        "p95": 124.2
+      },
+      "data_age_s": {
+        "mean": 0.285,
+        "max": 0.56
+      },
+      "server_age_s": {
+        "mean": 0.276,
+        "max": 0.597
+      },
+      "writes": {
+        "sent": 0,
+        "ok": 0,
+        "failed": 0,
+        "unfinished": 0,
+        "error_rate": null,
+        "latency_ms": {
+          "p50": null,
+          "p95": null
+        }
+      }
+    }
+  },
+  "app_alerts": {
+    "before": {
+      "none": 0
+    },
+    "during": {
+      "none": 0
+    },
+    "after": {
+      "none": 0
+    }
+  },
+  "recovery_time_s": 0.4,
+  "recovery_threshold_data_age_s": 2.71,
+  "hidden_delay_s": {
+    "before": 0.032,
+    "during": 1.655,
+    "after": 0.009
+  },
+  "guard_events": [
+    {
+      "t_s": 30.6,
+      "type": "complete",
+      "reason": "max duration 30s reached"
+    }
+  ],
+  "rollback": {
+    "ok": true,
+    "removed_toxics": [
+      "fleet_api_ingest/chaos_latency"
+    ]
+  },
+  "notes": "data_age_s = now - client event time of the state the app shows. server_age_s = now - the app's own last_telemetry_at. latency_ms = observer read latency (direct, not proxied); writes.latency_ms = loadgen round trip through the proxy.",
+  "plan": {
+    "source": "llm",
+    "experiments": [
+      {
+        "id": "exp1",
+        "target_link": "loadgen->fleet-api",
+        "latency_ms": 2000,
+        "duration_s": 30,
+        "hypothesis": "Injecting 2\u202fs latency will increase observer data_age to ~2.5\u202fs, keep error_rate <5\u202f%, and delay generation of speed\u2011related alerts by roughly the added latency, observable as a ~2\u202fs lag between telemetry receipt and alert appearance.",
+        "expected_blast_radius": [
+          "fleet-api",
+          "sqlite-db",
+          "alert_engine"
+        ],
+        "abort_thresholds": {
+          "max_data_age_s": 4.0,
+          "consecutive_s": 5,
+          "max_error_rate": 0.2,
+          "max_p95_latency_ms": 200.0
+        },
+        "reason": "2\u202fs is below the 30\u202fs client timeout but above the 1\u202fs update interval, allowing us to see if alert evaluation is delayed without triggering aborts."
+      },
+      {
+        "id": "exp2",
+        "target_link": "loadgen->fleet-api",
+        "latency_ms": 6000,
+        "duration_s": 30,
+        "hypothesis": "Injecting 6\u202fs latency will push data_age mean above 5\u202fs while the app still has no offline detection; we expect no device_offline alerts but a hidden_delay (data_age \u2013 server_age) of ~5\u202fs, confirming that the alert engine uses server_age not client\u2011visible age.",
+        "expected_blast_radius": [
+          "fleet-api",
+          "sqlite-db"
+        ],
+        "abort_thresholds": {
+          "max_data_age_s": 8.0,
+          "consecutive_s": 5,
+          "max_error_rate": 0.2,
+          "max_p95_latency_ms": 200.0
+        },
+        "reason": "6\u202fs latency (new value between prior 5\u202fk and 8\u202fk runs) tests the hidden_delay hypothesis without exceeding abort limits."
+      }
+    ]
+  },
+  "map_summary": {
+    "source": "llm",
+    "services": [
+      {
+        "name": "fleet-api",
+        "criticality": 5
+      },
+      {
+        "name": "toxiproxy",
+        "criticality": 1
+      },
+      {
+        "name": "fleet-simulator",
+        "criticality": 1
+      },
+      {
+        "name": "loadgen",
+        "criticality": 1
+      },
+      {
+        "name": "sqlite-db",
+        "criticality": 4
+      }
+    ],
+    "edges": 4,
+    "data_flows": [
+      {
+        "name": "telemetry_ingest",
+        "path": [
+          "loadgen",
+          "toxiproxy",
+          "fleet-api",
+          "sqlite-db"
+        ],
+        "description": "External load generator sends telemetry through toxiproxy to fleet-api which stores it in SQLite"
+      },
+      {
+        "name": "simulation_flow",
+        "path": [
+          "fleet-simulator",
+          "fleet-api",
+          "sqlite-db"
+        ],
+        "description": "Simulator posts telemetry directly to fleet-api which persists it"
+      }
+    ]
+  },
+  "analysis": {
+    "source": "llm",
+    "injected": "2000\u202fms latency injected on loadgen->fleet-api for 30.7\u202fs",
+    "impact": [
+      {
+        "metric": "error_rate",
+        "unit": "ratio",
+        "baseline": 0.0,
+        "during": 0.0,
+        "after": 0.0
+      },
+      {
+        "metric": "latency_ms p95",
+        "unit": "ms",
+        "baseline": 45.3,
+        "during": 54.4,
+        "after": 124.2
+      },
+      {
+        "metric": "data_age_s mean",
+        "unit": "s",
+        "baseline": 0.541,
+        "during": 2.043,
+        "after": 0.285
+      },
+      {
+        "metric": "server_age_s mean",
+        "unit": "s",
+        "baseline": 0.508,
+        "during": 0.388,
+        "after": 0.276
+      },
+      {
+        "metric": "hidden_delay_s",
+        "unit": "s",
+        "baseline": 0.032,
+        "during": 1.655,
+        "after": 0.009
+      }
+    ],
+    "hypothesis_held": "partially",
+    "hypothesis_reason": "data_age_s increased to ~2.0\u202fs (close to the expected ~2.5\u202fs) and error_rate remained 0.0\u202f% (<5\u202f%), but no speed\u2011related alerts were generated, so the expected alert\u2011delay effect could not be verified",
+    "guard_aborted": false,
+    "abort_explanation": null,
+    "recovery_time_s": 0.4,
+    "weakness_found": true,
+    "weakness": "data_age_s mean rose to 2.043\u202fs while server_age_s mean was only 0.388\u202fs, yielding a hidden_delay_s of 1.655\u202fs; because the app does not store client timestamps it cannot see the true staleness of telemetry, resulting in potentially stale data being presented without any alert",
+    "recommended_fix": {
+      "change": "Store the client\u2011provided telemetry timestamp and use it when calculating data_age so the app can detect stale data",
+      "where": "api/telemetry.py"
+    }
+  },
+  "model": "openai/gpt-oss-120b"
+}

@@ -1,0 +1,91 @@
+{
+  "services": [
+    {
+      "name": "fleet-api",
+      "role": "core FastAPI service exposing REST API and telemetry ingestion",
+      "ports": [
+        "8000"
+      ],
+      "criticality": 5,
+      "reason": "Defined in docker-compose.yml as main service with ports 8000 and healthcheck"
+    },
+    {
+      "name": "toxiproxy",
+      "role": "chaos proxy for fleet-api ingestion path",
+      "ports": [
+        "8474",
+        "18000"
+      ],
+      "criticality": 1,
+      "reason": "Added in docker-compose.chaos.yml to proxy loadgen traffic"
+    },
+    {
+      "name": "fleet-simulator",
+      "role": "demo telemetry generator (profile demo)",
+      "ports": [],
+      "criticality": 1,
+      "reason": "Defined in docker-compose.yml with profile demo and depends_on fleet-api"
+    },
+    {
+      "name": "loadgen",
+      "role": "external telemetry load generator used in chaos tests",
+      "ports": [],
+      "criticality": 1,
+      "reason": "Appears in known chaos links as source of telemetry ingestion"
+    },
+    {
+      "name": "sqlite-db",
+      "role": "embedded SQLite database storing fleet data",
+      "ports": [],
+      "criticality": 4,
+      "reason": "DB_DB_URL environment variable points to sqlite:///data/fleet.db"
+    }
+  ],
+  "edges": [
+    {
+      "from": "loadgen",
+      "to": "toxiproxy",
+      "protocol": "http",
+      "purpose": "telemetry ingestion (POST /api/v1/telemetry/ingest)"
+    },
+    {
+      "from": "toxiproxy",
+      "to": "fleet-api",
+      "protocol": "http",
+      "purpose": "forward ingestion to API"
+    },
+    {
+      "from": "fleet-api",
+      "to": "sqlite-db",
+      "protocol": "sqlite",
+      "purpose": "persist telemetry and state"
+    },
+    {
+      "from": "fleet-simulator",
+      "to": "fleet-api",
+      "protocol": "http",
+      "purpose": "send simulated telemetry"
+    }
+  ],
+  "data_flows": [
+    {
+      "name": "telemetry_ingest",
+      "path": [
+        "loadgen",
+        "toxiproxy",
+        "fleet-api",
+        "sqlite-db"
+      ],
+      "description": "External load generator sends telemetry through toxiproxy to fleet-api which stores it in SQLite"
+    },
+    {
+      "name": "simulation_flow",
+      "path": [
+        "fleet-simulator",
+        "fleet-api",
+        "sqlite-db"
+      ],
+      "description": "Simulator posts telemetry directly to fleet-api which persists it"
+    }
+  ]
+}

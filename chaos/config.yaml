@@ -1,0 +1,73 @@
+# Chaos engineering config. Hard limits here are enforced by code,
+# never by agents. Agents only see them as input.
+
+# Compose project name (the repo folder name). Verify with: docker compose ls
+project: hackbosch
+
+app:
+  base_url: http://localhost:8000        # observer reads here directly, never via proxy
+  compose_files:
+    - docker-compose.yml
+    - docker-compose.chaos.yml
+
+toxiproxy:
+  api_url: http://localhost:8474
+
+llm:
+  provider: groq
+  model: openai/gpt-oss-120b             # override with env LLM_MODEL
+  api_key_env: LLM_API_KEY               # or put it in chaos/.env
+  timeout_s: 60
+  temperature: 0.2
+
+loadgen:
+  # Through Toxiproxy, so injected latency hits ingestion only.
+  ingest_url: http://localhost:18000/api/v1/telemetry/ingest
+  vehicles: 3
+  interval_s: 1.0
+  timeout_s: 30                          # above max_latency_ms so slow sends complete
+
+observer:
+  interval_s: 1.0
+  timeout_s: 5
+
+run:
+  baseline_duration_s: 300
+  warmup_s: 20                           # "before" phase, after loadgen starts
+  recovery_max_s: 60                     # give up measuring recovery after this
+  after_s: 10                            # extra "after" samples once recovered
+
+limits:
+  max_targets_at_once: 1
+  max_latency_ms: 15000
+  max_duration_s: 60
+  compose_project_label: com.docker.compose.project
+  # Only these links may be targeted. Each one has a Toxiproxy proxy in front.
+  allowed_links:
+    - name: loadgen->fleet-api
+      proxy: fleet_api_ingest
+      from: loadgen
+      to: fleet-api
+      listen: 0.0.0.0:18000
+      upstream: fleet-api:8000
+      purpose: telemetry ingestion (POST /api/v1/telemetry/ingest)
+
+guard:
+  # guard-test: fixed experiment with a low threshold, to show the guard
+  # aborting by itself.
+  guard_test:
+    experiment:
+      id: guard-test
+      target_link: loadgen->fleet-api
+      latency_ms: 10000
+      duration_s: 60
+      hypothesis: >-
+        With 10000 ms added on ingestion, vehicle data age rises above 8 s and the
+        guard aborts the run before its 60 s end.
+      expected_blast_radius: [fleet-api ingestion, vehicle state freshness, alerting]
+      reason: Fixed guard test (Step 3).
+    abort_thresholds:
+      max_data_age_s: 8
+      consecutive_s: 3
+      max_error_rate: 0.5
+      max_p95_latency_ms: 5000

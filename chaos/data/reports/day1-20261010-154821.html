@@ -1,0 +1,94 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>Chaos Run Report</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#14171c;--muted:#5d6672;--line:#e3e6ea;--accent:#3e63dd;
+--bad:#d93036;--warn:#c27c0e;--good:#18794e;--band:rgba(217,48,54,.08);--chip:#eef1f5}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1216;--card:#171b21;--ink:#e8eaed;--muted:#99a2ad;
+--line:#2a3039;--accent:#7b9bff;--bad:#ff6369;--warn:#f1a10d;--good:#3dd68c;--band:rgba(255,99,105,.10);--chip:#222833}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);
+font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:28px 16px 48px}
+h1{font-size:26px;margin:0 0 4px}h2{font-size:17px;margin:0 0 12px}
+.muted,.sub{color:var(--muted)}.sub{margin:0 0 20px;font-size:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;margin:16px 0}
+.finding{border-left:5px solid var(--bad)}.finding .k{font-size:12px;font-weight:700;letter-spacing:.06em;
+text-transform:uppercase;color:var(--bad)}.finding p{font-size:19px;font-weight:600;margin:6px 0 0}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.tl{font-size:12px;color:var(--muted)}.tv{font-size:28px;font-weight:700;margin:2px 0}.ts{font-size:12px;color:var(--muted)}
+.tile.bad .tv{color:var(--bad)}.tile.warn .tv{color:var(--warn)}.tile.good .tv{color:var(--good)}
+svg{width:100%;height:auto}.grid{stroke:var(--line)}.tick{fill:var(--muted);font-size:11px}
+.band{fill:var(--band)}.bandlabel{fill:var(--bad);font-size:11px;font-weight:600}
+.thr{stroke:var(--muted);stroke-dasharray:5 4}.thrlabel{fill:var(--muted);font-size:11px}
+polyline{fill:none;stroke-width:2.5;stroke-linejoin:round}polyline.real{stroke:var(--bad)}polyline.seen{stroke:var(--accent)}
+.legend{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:6px}
+.sw{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.sw.real{background:var(--bad)}.sw.seen{background:var(--accent)}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.step{border:1px solid var(--line);border-radius:10px;padding:14px}.step h3{font-size:14px;margin:0 0 6px}
+.step .n{display:inline-block;width:22px;height:22px;border-radius:50%;background:var(--chip);text-align:center;
+font-size:12px;line-height:22px;margin-right:6px}.step p{margin:4px 0;font-size:13.5px}
+.ai{font-size:11px;font-weight:700;color:#fff;background:#8e4ec6;border-radius:4px;padding:1px 6px;margin-left:6px}
+.code{font-size:11px;font-weight:700;color:#fff;background:#0d74ce;border-radius:4px;padding:1px 6px;margin-left:6px}
+.src{font-size:11px;border-radius:4px;padding:1px 6px;background:var(--chip);color:var(--muted)}
+.src.fallback{color:var(--warn)}
+.chip{display:inline-block;background:var(--chip);border-radius:6px;padding:3px 8px;margin:2px;font-size:12.5px}
+.chip small{color:var(--muted);margin-left:4px}.crit5,.crit4{outline:1px solid var(--bad)}
+.flow{font-size:12.5px;margin-top:6px}.flow span{color:var(--muted)}
+.tablewrap{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{text-align:left;padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:12px}tr.chosen td{background:var(--chip)}
+.fix{border-left:5px solid var(--good)}.where{font-family:ui-monospace,Consolas,monospace;font-size:13px;
+background:var(--chip);padding:2px 6px;border-radius:4px}ul{margin:0;padding-left:20px}li{margin:4px 0}
+</style></head><body><main>
+<h1>Chaos Engineering Report: Fleet Management System</h1>
+<p class="sub">Run <b>day1-20261010-154821</b> · 4000 ms network latency on
+<b>loadgen-&gt;fleet-api</b> · Ran to planned end (30.4 s) · generated 2026-10-10 15:49
+ · model openai/gpt-oss-120b</p>
+
+<div class="card finding"><div class="k">Key finding</div><p>No weakness was found in this run.</p></div>
+
+<div class="tiles"><div class='tile bad'><div class='tl'>Real data age</div><div class='tv'>3.74 s</div><div class='ts'>avg during fault · max 4.51 s</div></div><div class='tile warn'><div class='tl'>App believed</div><div class='tv'>0.66 s</div><div class='ts'>avg · blind to 3.09 s</div></div><div class='tile bad'><div class='tl'>Alerts raised by app</div><div class='tv'>0</div><div class='ts'>during the fault</div></div><div class='tile '><div class='tl'>Failed requests</div><div class='tv'>0</div><div class='ts'>of 0 writes</div></div><div class='tile good'><div class='tl'>Recovery</div><div class='tv'>0.7 s</div><div class='ts'>after rollback</div></div></div>
+
+<div class="card"><h2>What happened to data freshness</h2><svg viewBox='0 0 920 320' role='img' aria-label='Data age over time'><rect class='band' x='313.1' y='18' width='417.1' height='262'/><text class='bandlabel' x='319.1' y='32'>delay injected</text><line class='grid' x1='52' x2='904' y1='280.0' y2='280.0'/><text class='tick' x='44' y='284.0' text-anchor='end'>0s</text><line class='grid' x1='52' x2='904' y1='241.0' y2='241.0'/><text class='tick' x='44' y='245.0' text-anchor='end'>1s</text><line class='grid' x1='52' x2='904' y1='202.0' y2='202.0'/><text class='tick' x='44' y='206.0' text-anchor='end'>2s</text><line class='grid' x1='52' x2='904' y1='163.0' y2='163.0'/><text class='tick' x='44' y='167.0' text-anchor='end'>3s</text><line class='grid' x1='52' x2='904' y1='124.0' y2='124.0'/><text class='tick' x='44' y='128.0' text-anchor='end'>4s</text><line class='grid' x1='52' x2='904' y1='85.1' y2='85.1'/><text class='tick' x='44' y='89.1' text-anchor='end'>5s</text><line class='grid' x1='52' x2='904' y1='46.1' y2='46.1'/><text class='tick' x='44' y='50.1' text-anchor='end'>6s</text><line class='thr' x1='52' x2='904' y1='46.1' y2='46.1'/><text class='thrlabel' x='900' y='40.1' text-anchor='end'>guard stops at 6s</text><text class='tick' x='175.7' y='298' text-anchor='middle'>-10s</text><text class='tick' x='313.1' y='298' text-anchor='middle'>+0s</text><text class='tick' x='450.5' y='298' text-anchor='middle'>+10s</text><text class='tick' x='587.9' y='298' text-anchor='middle'>+20s</text><text class='tick' x='725.4' y='298' text-anchor='middle'>+30s</text><text class='tick' x='862.8' y='298' text-anchor='middle'>+40s</text><text class='tick' x='486.0' y='316' text-anchor='middle'>seconds relative to injection</text><polyline class='real' points='52.0,274.0 79.5,266.7 93.2,258.1 107.0,272.2 120.7,272.4 134.5,271.9 148.2,259.2 161.9,275.2 175.7,258.0 203.2,263.9 230.6,258.8 244.4,260.4 271.9,270.3 285.6,258.6 299.4,258.2 313.1,273.4 340.6,211.7 368.1,135.6 381.8,129.2 395.5,137.3 409.3,141.7 436.8,113.1 450.5,138.8 464.3,125.2 478.0,121.3 491.7,137.5 505.5,128.8 519.2,123.9 546.7,116.5 560.5,127.8 574.2,104.2 601.7,111.4 629.2,113.9 642.9,129.4 656.6,136.1 684.1,116.8 697.9,104.7 711.6,132.3 725.4,126.0 739.1,176.8 752.8,264.9 766.6,270.7 780.3,260.5 807.8,271.3 821.5,279.5 835.3,261.0 862.8,262.2 876.5,258.7 890.3,260.6 904.0,275.6'/><polyline class='seen' points='52.0,275.2 79.5,268.1 93.2,259.0 107.0,273.3 120.7,272.9 134.5,273.0 148.2,260.5 161.9,276.1 175.7,259.7 203.2,264.9 230.6,259.3 244.4,262.0 271.9,270.9 285.6,259.6 299.4,258.8 313.1,274.0 340.6,189.9 368.1,113.9 381.8,263.8 395.5,272.2 409.3,276.6 436.8,270.2 450.5,273.3 464.3,259.8 478.0,257.2 491.7,272.1 505.5,263.9 519.2,257.9 546.7,273.1 560.5,262.6 574.2,262.7 601.7,257.5 629.2,263.6 642.9,264.3 656.6,270.6 684.1,273.8 697.9,261.3 711.6,266.6 725.4,260.3 739.1,256.1 752.8,266.0 766.6,271.4 780.3,261.2 807.8,272.0 821.5,258.2 835.3,261.7 862.8,262.7 876.5,259.6 890.3,261.6 904.0,276.3'/></svg><div class='legend'><span><i class='sw real'></i>Real data age (measured by us)</span><span><i class='sw seen'></i>What the app believes (its own timestamp)</span></div>
+<p class="muted" style="font-size:13px;margin:8px 0 0">The red line is how old the truck data on screen really was.
+The blue line is how old the app thought it was. When they split apart, the app is showing old data as fresh.</p></div>
+
+<div class="card"><h2>How the run worked</h2><div class="steps">
+<div class="step"><h3><span class="n">1</span>Map the system<span class="ai">AI</span> <span class='src llm'>AI</span></h3>
+<p>5 services, 4 links found.</p><div><span class='chip crit5'>fleet-api<small>crit 5</small></span><span class='chip crit1'>toxiproxy<small>crit 1</small></span><span class='chip crit1'>fleet-simulator<small>crit 1</small></span><span class='chip crit1'>loadgen<small>crit 1</small></span><span class='chip crit4'>sqlite-db<small>crit 4</small></span></div><div class='flow'>loadgen <span>→</span> toxiproxy <span>→</span> fleet-api <span>→</span> sqlite-db</div><div class='flow'>fleet-simulator <span>→</span> fleet-api <span>→</span> sqlite-db</div></div>
+<div class="step"><h3><span class="n">2</span>Measure normal<span class="code">CODE</span></h3>
+<p>Baseline: data age 0.54 s avg, 0 errors,
+read p95 45.3 ms.</p></div>
+<div class="step"><h3><span class="n">3</span>Plan experiments<span class="ai">AI</span> <span class='src llm'>AI</span></h3>
+<p>2 experiments proposed, ranked most informative first.</p><p><b>Hypothesis:</b> Injecting 4 s latency will raise observer data_age to ~4.5 s (baseline 0.54 s + 1 s update interval + 4 s added), staying below any offline detection but delaying alerts (e.g., speeding) by roughly the added latency, with no device_offline alerts and error_rate remaining near 0%.</p></div>
+<div class="step"><h3><span class="n">4</span>Safety gate<span class="code">CODE</span></h3>
+<ul><li>Hard limits checked: ≤15000 ms, ≤60 s, one allowed link</li><li>Pre-flight: app healthy, no fault active</li>
+<li>Guard stops at data age &gt; 6 s for 5 s</li></ul></div>
+<div class="step"><h3><span class="n">5</span>Inject, watch, roll back<span class="code">CODE</span></h3>
+<p>4000 ms delay for 30.4 s. max duration 30s reached.</p>
+<p>Rollback: removed fleet_api_ingest/chaos_latency.
+Recovered in 0.7 s.</p></div>
+<div class="step"><h3><span class="n">6</span>Analyse<span class="ai">AI</span> <span class='src fallback'>safe default</span></h3>
+<p><b>Hypothesis held:</b> inconclusive. Analyst output unavailable; hypothesis not assessed.</p></div>
+</div></div>
+
+
+
+<div class="card"><h2>Measurements</h2><div class="tablewrap"><table>
+<tr><th>Metric</th><th>Baseline</th><th>During fault</th><th>After rollback</th></tr><tr><td>Real data age, mean</td><td>0.54 s</td><td>3.74 s</td><td>0.34 s</td></tr><tr><td>Real data age, max</td><td>1.14 s</td><td>4.51 s</td><td>2.65 s</td></tr><tr><td>App-believed age, mean</td><td>0.51 s</td><td>0.66 s</td><td>0.3 s</td></tr><tr><td>Write latency p95 (through proxy)</td><td>97.4 ms</td><td>n/a</td><td>n/a</td></tr><tr><td>Read latency p95 (dashboard API)</td><td>45.3 ms</td><td>38.9 ms</td><td>50.6 ms</td></tr><tr><td>Read error rate</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>Alerts raised by the app</td><td>n/a</td><td>0</td><td>0</td></tr>
+</table></div></div>
+
+<div class="card"><h2>Experiments proposed by the planner</h2><div class="tablewrap"><table>
+<tr><th>#</th><th>Experiment</th><th>Latency</th><th>Duration</th><th>Hypothesis</th></tr><tr class='chosen'><td>1</td><td>exp1 <b>▶ run</b></td><td>4000 ms</td><td>30 s</td><td>Injecting 4 s latency will raise observer data_age to ~4.5 s (baseline 0.54 s + 1 s update interval + 4 s added), staying below any offline detection but delaying alerts (e.g., speeding) by roughly the added latency, with no device_offline alerts and error_rate remaining near 0%.</td></tr><tr class=''><td>2</td><td>exp2</td><td>1000 ms</td><td>30 s</td><td>A modest 1 s added latency will increase data_age to ~1.5 s, well below any staleness concerns, so the app should continue to generate alerts promptly and maintain error_rate ≈ 0%.</td></tr></table></div></div>
+
+<div class="card"><h2>Safety evidence</h2><ul>
+<li>Agents cannot inject faults: every plan passes code-enforced hard limits first.</li>
+<li>Rollback runs in a <code>finally</code> block and on Ctrl+C; safe to run twice.</li>
+<li>Kill switch: <code>python -m chaos.run abort</code> removes all faults from any terminal.</li>
+<li>Only containers of this Compose project are touched.</li><li><b>Guard test</b> (guard-test-20261010-144848): 10000 ms injected, guard aborted by itself at t=9.9 s; recovered in 3 s.</li></ul></div>
+
+<p class="muted" style="font-size:12px">AI agents reason and decide; code measures, injects and enforces safety.
+Every agent decision is logged in chaos/data/decisions.jsonl.</p>
+</main></body></html>

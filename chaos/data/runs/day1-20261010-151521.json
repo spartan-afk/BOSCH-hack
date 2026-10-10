@@ -1,0 +1,161 @@
+{
+  "run_id": "day1-20261010-151521",
+  "observer_sampling": "random_phase",
+  "executed_plan": {
+    "id": "exp-12s",
+    "target_link": "loadgen->fleet-api",
+    "latency_ms": 12000,
+    "duration_s": 30,
+    "hypothesis": "Injecting 12\u202fs latency will increase write latency and observer data_age above 5\u202fs, testing whether the app treats vehicles as offline and generates device_offline alerts, while still staying below the 30\u202fs client timeout.",
+    "expected_blast_radius": [
+      "fleet-api",
+      "sqlite-db",
+      "observer"
+    ],
+    "abort_thresholds": {
+      "max_data_age_s": 14.0,
+      "consecutive_s": 5,
+      "max_error_rate": 0.2,
+      "max_p95_latency_ms": 1000.0
+    },
+    "reason": "Baseline mean data_age 0.541\u202fs and update interval 1\u202fs give required abort age \u224812+0.541+1=13.5\u202fs; set 14\u202fs. Baseline read p95 45.3\u202fms, set 1000\u202fms well above.",
+    "injected_for_s": 30.1,
+    "warmup_s": 20
+  },
+  "metrics": {
+    "baseline": {
+      "error_rate": 0.0,
+      "latency_ms": {
+        "p50": 25.6,
+        "p95": 45.3
+      },
+      "data_age_s": {
+        "mean": 0.541,
+        "max": 1.137
+      },
+      "server_age_s": {
+        "mean": 0.508,
+        "max": 1.12
+      },
+      "writes": {
+        "sent": 900,
+        "ok": 900,
+        "failed": 0,
+        "unfinished": 0,
+        "error_rate": 0.0,
+        "latency_ms": {
+          "p50": 61.7,
+          "p95": 97.4
+        }
+      }
+    },
+    "before": {
+      "samples": 60,
+      "error_rate": 0.0,
+      "latency_ms": {
+        "p50": 27.2,
+        "p95": 41.9
+      },
+      "data_age_s": {
+        "mean": 0.598,
+        "max": 1.044
+      },
+      "server_age_s": {
+        "mean": 0.56,
+        "max": 1.025
+      },
+      "writes": {
+        "sent": 60,
+        "ok": 60,
+        "failed": 0,
+        "unfinished": 0,
+        "error_rate": 0.0,
+        "latency_ms": {
+          "p50": 65.7,
+          "p95": 95.0
+        }
+      }
+    },
+    "during": {
+      "samples": 93,
+      "error_rate": 0.0,
+      "latency_ms": {
+        "p50": 31.8,
+        "p95": 52.0
+      },
+      "data_age_s": {
+        "mean": 10.392,
+        "max": 13.078
+      },
+      "server_age_s": {
+        "mean": 3.002,
+        "max": 12.529
+      },
+      "writes": {
+        "sent": 93,
+        "ok": 93,
+        "failed": 0,
+        "unfinished": 0,
+        "error_rate": 0.0,
+        "latency_ms": {
+          "p50": 12051.1,
+          "p95": 12095.4
+        }
+      }
+    },
+    "after": {
+      "samples": 42,
+      "error_rate": 0.0,
+      "latency_ms": {
+        "p50": 29.9,
+        "p95": 56.1
+      },
+      "data_age_s": {
+        "mean": 0.692,
+        "max": 8.074
+      },
+      "server_age_s": {
+        "mean": 0.458,
+        "max": 0.993
+      },
+      "writes": {
+        "sent": 42,
+        "ok": 42,
+        "failed": 0,
+        "unfinished": 0,
+        "error_rate": 0.0,
+        "latency_ms": {
+          "p50": 68.2,
+          "p95": 113.8
+        }
+      }
+    }
+  },
+  "app_alerts": {
+    "before": {
+      "none": 0
+    },
+    "during": {
+      "none": 0
+    },
+    "after": {
+      "none": 0
+    }
+  },
+  "recovery_time_s": 2.4,
+  "recovery_threshold_data_age_s": 2.71,
+  "guard_events": [
+    {
+      "t_s": 30.1,
+      "type": "complete",
+      "reason": "max duration 30s reached"
+    }
+  ],
+  "rollback": {
+    "ok": true,
+    "removed_toxics": [
+      "fleet_api_ingest/chaos_latency"
+    ]
+  },
+  "notes": "data_age_s = now - client event time of the state the app shows. server_age_s = now - the app's own last_telemetry_at. latency_ms = observer read latency (direct, not proxied); writes.latency_ms = loadgen round trip through the proxy."
+}

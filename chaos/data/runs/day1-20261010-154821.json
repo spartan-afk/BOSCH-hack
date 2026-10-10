@@ -1,0 +1,298 @@
+{
+  "run_id": "day1-20261010-154821",
+  "observer_sampling": "random_phase",
+  "executed_plan": {
+    "id": "exp1",
+    "target_link": "loadgen->fleet-api",
+    "latency_ms": 4000,
+    "duration_s": 30,
+    "hypothesis": "Injecting 4\u202fs latency will raise observer data_age to ~4.5\u202fs (baseline 0.54\u202fs + 1\u202fs update interval + 4\u202fs added), staying below any offline detection but delaying alerts (e.g., speeding) by roughly the added latency, with no device_offline alerts and error_rate remaining near\u202f0%.",
+    "expected_blast_radius": [
+      "fleet-api",
+      "sqlite-db"
+    ],
+    "abort_thresholds": {
+      "max_data_age_s": 6.0,
+      "consecutive_s": 5,
+      "max_error_rate": 0.2,
+      "max_p95_latency_ms": 200.0
+    },
+    "reason": "4\u202fs is the first latency near the informal 5\u202fs staleness point not yet tested; it probes alert delay without hitting timeout.",
+    "injected_for_s": 30.4,
+    "warmup_s": 20
+  },
+  "metrics": {
+    "baseline": {
+      "error_rate": 0.0,
+      "latency_ms": {
+        "p50": 25.6,
+        "p95": 45.3
+      },
+      "data_age_s": {
+        "mean": 0.541,
+        "max": 1.137
+      },
+      "server_age_s": {
+        "mean": 0.508,
+        "max": 1.12
+      },
+      "writes": {
+        "sent": 900,
+        "ok": 900,
+        "failed": 0,
+        "unfinished": 0,
+        "error_rate": 0.0,
+        "latency_ms": {
+          "p50": 61.7,
+          "p95": 97.4
+        }
+      }
+    },
+    "before": {
+      "samples": 60,
+      "error_rate": 0.0,
+      "latency_ms": {
+        "p50": 27.1,
+        "p95": 51.0
+      },
+      "data_age_s": {
+        "mean": 0.285,
+        "max": 0.564
+      },
+      "server_age_s": {
+        "mean": 0.253,
+        "max": 0.544
+      },
+      "writes": {
+        "sent": 0,
+        "ok": 0,
+        "failed": 0,
+        "unfinished": 0,
+        "error_rate": null,
+        "latency_ms": {
+          "p50": null,
+          "p95": null
+        }
+      }
+    },
+    "during": {
+      "samples": 90,
+      "error_rate": 0.0,
+      "latency_ms": {
+        "p50": 26.1,
+        "p95": 38.9
+      },
+      "data_age_s": {
+        "mean": 3.744,
+        "max": 4.51
+      },
+      "server_age_s": {
+        "mean": 0.655,
+        "max": 4.26
+      },
+      "writes": {
+        "sent": 0,
+        "ok": 0,
+        "failed": 0,
+        "unfinished": 0,
+        "error_rate": null,
+        "latency_ms": {
+          "p50": null,
+          "p95": null
+        }
+      }
+    },
+    "after": {
+      "samples": 39,
+      "error_rate": 0.0,
+      "latency_ms": {
+        "p50": 30.7,
+        "p95": 50.6
+      },
+      "data_age_s": {
+        "mean": 0.342,
+        "max": 2.647
+      },
+      "server_age_s": {
+        "mean": 0.3,
+        "max": 0.613
+      },
+      "writes": {
+        "sent": 0,
+        "ok": 0,
+        "failed": 0,
+        "unfinished": 0,
+        "error_rate": null,
+        "latency_ms": {
+          "p50": null,
+          "p95": null
+        }
+      }
+    }
+  },
+  "app_alerts": {
+    "before": {
+      "none": 0
+    },
+    "during": {
+      "none": 0
+    },
+    "after": {
+      "none": 0
+    }
+  },
+  "recovery_time_s": 0.7,
+  "recovery_threshold_data_age_s": 2.71,
+  "guard_events": [
+    {
+      "t_s": 30.3,
+      "type": "complete",
+      "reason": "max duration 30s reached"
+    }
+  ],
+  "rollback": {
+    "ok": true,
+    "removed_toxics": [
+      "fleet_api_ingest/chaos_latency"
+    ]
+  },
+  "notes": "data_age_s = now - client event time of the state the app shows. server_age_s = now - the app's own last_telemetry_at. latency_ms = observer read latency (direct, not proxied); writes.latency_ms = loadgen round trip through the proxy.",
+  "plan": {
+    "source": "llm",
+    "experiments": [
+      {
+        "id": "exp1",
+        "target_link": "loadgen->fleet-api",
+        "latency_ms": 4000,
+        "duration_s": 30,
+        "hypothesis": "Injecting 4\u202fs latency will raise observer data_age to ~4.5\u202fs (baseline 0.54\u202fs + 1\u202fs update interval + 4\u202fs added), staying below any offline detection but delaying alerts (e.g., speeding) by roughly the added latency, with no device_offline alerts and error_rate remaining near\u202f0%.",
+        "expected_blast_radius": [
+          "fleet-api",
+          "sqlite-db"
+        ],
+        "abort_thresholds": {
+          "max_data_age_s": 6.0,
+          "consecutive_s": 5,
+          "max_error_rate": 0.2,
+          "max_p95_latency_ms": 200.0
+        },
+        "reason": "4\u202fs is the first latency near the informal 5\u202fs staleness point not yet tested; it probes alert delay without hitting timeout."
+      },
+      {
+        "id": "exp2",
+        "target_link": "loadgen->fleet-api",
+        "latency_ms": 1000,
+        "duration_s": 30,
+        "hypothesis": "A modest 1\u202fs added latency will increase data_age to ~1.5\u202fs, well below any staleness concerns, so the app should continue to generate alerts promptly and maintain error_rate \u2248\u202f0%.",
+        "expected_blast_radius": [
+          "fleet-api",
+          "sqlite-db"
+        ],
+        "abort_thresholds": {
+          "max_data_age_s": 3.0,
+          "consecutive_s": 5,
+          "max_error_rate": 0.2,
+          "max_p95_latency_ms": 200.0
+        },
+        "reason": "1\u202fs latency tests the lower\u2011bound effect of network delay, confirming that small latencies are harmless and distinct from higher\u2011latency cases."
+      }
+    ]
+  },
+  "map_summary": {
+    "source": "llm",
+    "services": [
+      {
+        "name": "fleet-api",
+        "criticality": 5
+      },
+      {
+        "name": "toxiproxy",
+        "criticality": 1
+      },
+      {
+        "name": "fleet-simulator",
+        "criticality": 1
+      },
+      {
+        "name": "loadgen",
+        "criticality": 1
+      },
+      {
+        "name": "sqlite-db",
+        "criticality": 4
+      }
+    ],
+    "edges": 4,
+    "data_flows": [
+      {
+        "name": "telemetry_ingest",
+        "path": [
+          "loadgen",
+          "toxiproxy",
+          "fleet-api",
+          "sqlite-db"
+        ],
+        "description": "External load generator sends telemetry through toxiproxy to fleet-api which stores it in SQLite"
+      },
+      {
+        "name": "simulation_flow",
+        "path": [
+          "fleet-simulator",
+          "fleet-api",
+          "sqlite-db"
+        ],
+        "description": "Simulator posts telemetry directly to fleet-api which persists it"
+      }
+    ]
+  },
+  "analysis": {
+    "source": "fallback",
+    "injected": "4000 ms latency on loadgen->fleet-api for up to 30 s",
+    "impact": [
+      {
+        "metric": "error rate",
+        "unit": "ratio",
+        "baseline": 0.0,
+        "during": 0.0,
+        "after": 0.0
+      },
+      {
+        "metric": "p50 latency",
+        "unit": "ms",
+        "baseline": 25.6,
+        "during": 26.1,
+        "after": 30.7
+      },
+      {
+        "metric": "p95 latency",
+        "unit": "ms",
+        "baseline": 45.3,
+        "during": 38.9,
+        "after": 50.6
+      },
+      {
+        "metric": "mean data age",
+        "unit": "s",
+        "baseline": 0.541,
+        "during": 3.744,
+        "after": 0.342
+      },
+      {
+        "metric": "max data age",
+        "unit": "s",
+        "baseline": 1.137,
+        "during": 4.51,
+        "after": 2.647
+      }
+    ],
+    "hypothesis_held": "inconclusive",
+    "hypothesis_reason": "Analyst output unavailable; hypothesis not assessed.",
+    "guard_aborted": false,
+    "abort_explanation": null,
+    "recovery_time_s": 0.7,
+    "weakness_found": false,
+    "weakness": "Not assessed: analyst LLM output was unavailable, so no weakness was identified.",
+    "recommended_fix": null
+  },
+  "model": "openai/gpt-oss-120b"
+}

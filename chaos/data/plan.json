@@ -1,0 +1,60 @@
+{
+  "source": "llm",
+  "experiments": [
+    {
+      "id": "exp1",
+      "target_link": "loadgen->fleet-api",
+      "latency_ms": 15000,
+      "duration_s": 30,
+      "hypothesis": "Injecting the maximum allowed 15\u202fs latency will keep client requests below the 30\u202fs timeout, so error_rate stays <5\u202f% and alerts (e.g., speeding) still fire, merely delayed by ~15\u202fs.",
+      "expected_blast_radius": [
+        "fleet-api",
+        "sqlite-db",
+        "alert_engine"
+      ],
+      "abort_thresholds": {
+        "max_data_age_s": 17.0,
+        "consecutive_s": 5,
+        "max_error_rate": 0.2,
+        "max_p95_latency_ms": 200.0
+      },
+      "reason": "Tests the extreme latency edge while still respecting client timeout, probing both error rate and alert delay."
+    },
+    {
+      "id": "exp2",
+      "target_link": "loadgen->fleet-api",
+      "latency_ms": 8000,
+      "duration_s": 30,
+      "hypothesis": "With 8\u202fs added latency, a telemetry record that should trigger a speeding alert will be observed in the API ~8\u202fs later, confirming linear alert delay and no device_offline alerts.",
+      "expected_blast_radius": [
+        "fleet-api",
+        "alert_engine"
+      ],
+      "abort_thresholds": {
+        "max_data_age_s": 10.0,
+        "consecutive_s": 5,
+        "max_error_rate": 0.2,
+        "max_p95_latency_ms": 200.0
+      },
+      "reason": "Mid\u2011range latency to verify that alert generation delay matches injected latency."
+    },
+    {
+      "id": "exp3",
+      "target_link": "loadgen->fleet-api",
+      "latency_ms": 5000,
+      "duration_s": 30,
+      "hypothesis": "Adding 5\u202fs latency raises observer data_age to ~5.5\u202fs (baseline\u202f0.54\u202fs + 1\u202fs interval + 5\u202fs), still below any offline detection, keeping error_rate \u22480\u202f% while delaying alerts by ~5\u202fs.",
+      "expected_blast_radius": [
+        "fleet-api",
+        "alert_engine"
+      ],
+      "abort_thresholds": {
+        "max_data_age_s": 7.0,
+        "consecutive_s": 5,
+        "max_error_rate": 0.2,
+        "max_p95_latency_ms": 200.0
+      },
+      "reason": "Lower latency to confirm linear relationship between added latency and data_age/alert delay without triggering errors."
+    }
+  ]
+}

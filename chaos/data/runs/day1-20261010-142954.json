@@ -1,0 +1,145 @@
+{
+  "run_id": "day1-20261010-142954",
+  "executed_plan": {
+    "id": "hardcoded",
+    "target_link": "loadgen->fleet-api",
+    "latency_ms": 10000,
+    "duration_s": 60,
+    "hypothesis": "10 s ingestion latency makes vehicle data stale by about 10 s.",
+    "expected_blast_radius": [
+      "vehicle state freshness"
+    ],
+    "abort_thresholds": {
+      "max_data_age_s": 15.0,
+      "consecutive_s": 3,
+      "max_error_rate": 0.05,
+      "max_p95_latency_ms": 1000.0
+    },
+    "reason": "Hardcoded Step 2 plan.",
+    "injected_for_s": 15.9,
+    "warmup_s": 20
+  },
+  "metrics": {
+    "baseline": {
+      "error_rate": 0.0,
+      "latency_ms": {
+        "p50": 31.5,
+        "p95": 90.4
+      },
+      "data_age_s": {
+        "mean": 0.912,
+        "max": 1.183
+      },
+      "server_age_s": {
+        "mean": 0.872,
+        "max": 1.146
+      },
+      "writes": {
+        "sent": 123,
+        "ok": 120,
+        "failed": 0,
+        "unfinished": 3,
+        "error_rate": 0.0,
+        "latency_ms": {
+          "p50": 67.0,
+          "p95": 104.5
+        }
+      }
+    },
+    "before": {
+      "samples": 60,
+      "error_rate": 0.0,
+      "latency_ms": {
+        "p50": 34.1,
+        "p95": 66.1
+      },
+      "data_age_s": {
+        "mean": 1.214,
+        "max": 10.37
+      },
+      "server_age_s": {
+        "mean": 1.172,
+        "max": 10.335
+      },
+      "writes": {
+        "sent": 60,
+        "ok": 60,
+        "failed": 0,
+        "unfinished": 0,
+        "error_rate": 0.0,
+        "latency_ms": {
+          "p50": 71.9,
+          "p95": 100.8
+        }
+      }
+    },
+    "during": {
+      "samples": 48,
+      "error_rate": 0.0,
+      "latency_ms": {
+        "p50": 28.9,
+        "p95": 44.7
+      },
+      "data_age_s": {
+        "mean": 7.021,
+        "max": 11.05
+      },
+      "server_age_s": {
+        "mean": 4.343,
+        "max": 10.999
+      },
+      "writes": {
+        "sent": 48,
+        "ok": 48,
+        "failed": 0,
+        "unfinished": 0,
+        "error_rate": 0.0,
+        "latency_ms": {
+          "p50": 7084.2,
+          "p95": 10083.5
+        }
+      }
+    },
+    "after": {
+      "samples": 42,
+      "error_rate": 0.0,
+      "latency_ms": {
+        "p50": 33.7,
+        "p95": 67.8
+      },
+      "data_age_s": {
+        "mean": 0.881,
+        "max": 8.034
+      },
+      "server_age_s": {
+        "mean": 0.684,
+        "max": 1.389
+      },
+      "writes": {
+        "sent": 42,
+        "ok": 42,
+        "failed": 0,
+        "unfinished": 0,
+        "error_rate": 0.0,
+        "latency_ms": {
+          "p50": 68.6,
+          "p95": 114.7
+        }
+      }
+    }
+  },
+  "recovery_time_s": 2.0,
+  "recovery_threshold_data_age_s": 2.77,
+  "guard_events": [
+    {
+      "t_s": 15.9,
+      "type": "abort",
+      "reason": "manual kill switch"
+    }
+  ],
+  "rollback": {
+    "ok": true,
+    "removed_toxics": []
+  },
+  "notes": "data_age_s = now - client event time of the state the app shows. server_age_s = now - the app's own last_telemetry_at. latency_ms = observer read latency (direct, not proxied); writes.latency_ms = loadgen round trip through the proxy."
+}

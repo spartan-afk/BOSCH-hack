@@ -1,0 +1,31 @@
+{
+  "run_id": "baseline-20261010-145541",
+  "observer_sampling": "random_phase",
+  "duration_s": 300,
+  "vehicles": 3,
+  "samples": 903,
+  "error_rate": 0.0,
+  "latency_ms": {
+    "p50": 25.6,
+    "p95": 45.3
+  },
+  "data_age_s": {
+    "mean": 0.541,
+    "max": 1.137
+  },
+  "server_age_s": {
+    "mean": 0.508,
+    "max": 1.12
+  },
+  "writes": {
+    "sent": 900,
+    "ok": 900,
+    "failed": 0,
+    "unfinished": 0,
+    "error_rate": 0.0,
+    "latency_ms": {
+      "p50": 61.7,
+      "p95": 97.4
+    }
+  }
+}
