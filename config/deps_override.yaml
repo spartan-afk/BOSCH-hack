@@ -1,0 +1,53 @@
+# Manual dependency overrides
+# These always take priority over auto-discovered edges
+# Format: source -> target with metadata
+overrides:
+  # Add edges that env-var scanning misses
+  additions:
+    - from: frontend
+      to: adservice
+      protocol: grpc
+      note: "Ad injection on product pages"
+    - from: checkoutservice
+      to: emailservice
+      protocol: grpc
+      note: "Order confirmation email"
+
+  # Remove false-positive edges
+  removals: []
+
+  # Override service properties
+  properties:
+    frontend:
+      critical: true
+      protocol: http
+    checkoutservice:
+      critical: true
+      protocol: grpc
+    cartservice:
+      critical: true
+      protocol: grpc
+    paymentservice:
+      critical: true
+      protocol: grpc
+    shippingservice:
+      critical: true
+      protocol: grpc
+    currencyservice:
+      critical: true
+      protocol: grpc
+    productcatalogservice:
+      critical: true
+      protocol: grpc
+    redis-cart:
+      critical: true
+      protocol: tcp
+    recommendationservice:
+      critical: false
+      protocol: grpc
+    adservice:
+      critical: false
+      protocol: grpc
+    emailservice:
+      critical: false
+      protocol: grpc

@@ -1,0 +1,25 @@
+# Kind cluster config: 1 control-plane + 2 workers
+# Workers isolate node-level chaos effects
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: chaos-lab
+nodes:
+  - role: control-plane
+    kubeadmConfigPatches:
+      - |
+        kind: InitConfiguration
+        nodeRegistration:
+          kubeletExtraArgs:
+            node-labels: "ingress-ready=true"
+    extraPortMappings:
+      - containerPort: 30080
+        hostPort: 30080
+        protocol: TCP
+      - containerPort: 30090
+        hostPort: 30090
+        protocol: TCP
+      - containerPort: 30300
+        hostPort: 30300
+        protocol: TCP
+  - role: worker
+  - role: worker

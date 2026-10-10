@@ -1,0 +1,31 @@
+# Safety limits for chaos experiments
+# The safety controller enforces these; the LLM cannot override them.
+
+experiment:
+  max_duration_s: 120
+  max_pods_affected: 1
+  max_delay_ms: 500
+  max_cpu_stress_workers: 2
+  max_memory_stress_mb: 256
+  cooldown_s: 300          # 5 min cooldown per target+type combo
+
+abort_thresholds:
+  success_rate_min: 0.90
+  p95_latency_max_ms: 2000
+  consecutive_breaches: 2  # abort after 2 consecutive threshold breaches
+
+watchdog:
+  poll_interval_s: 2
+
+baseline:
+  duration_s: 300          # 5 minutes
+  warmup_s: 60             # discard first 60s
+  min_success_rate: 0.99   # abort baseline if below
+
+recovery:
+  timeout_s: 120           # max wait for recovery after fault removal
+  success_threshold: 0.99  # success rate must reach 99% of baseline
+  stable_window_s: 30      # must hold for 30s
+
+kill_switch:
+  cleanup_timeout_s: 10    # max time to delete all CRDs and restore

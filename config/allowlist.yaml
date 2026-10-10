@@ -1,0 +1,26 @@
+# Allowed namespaces for chaos injection
+namespaces:
+  - boutique
+
+# Allowed services for chaos injection
+services:
+  - frontend
+  - checkoutservice
+  - cartservice
+  - paymentservice
+  - shippingservice
+  - currencyservice
+  - productcatalogservice
+  - recommendationservice
+  - adservice
+  - emailservice
+  - redis-cart
+
+# Forbidden services (never target these)
+forbidden:
+  - kube-system
+  - kube-dns
+  - coredns
+
+# Cluster context pattern (must match)
+cluster_context_pattern: "kind-*"
