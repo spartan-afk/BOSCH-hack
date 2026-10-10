@@ -36,3 +36,24 @@ export async function killSwitch() {
   const res = await fetch(`${API_URL}/kill`, { method: "POST" });
   return res.json();
 }
+
+export async function orchestrateAgent(targetService?: string, autoApprove: boolean = false) {
+  const res = await fetch(`${API_URL}/agent/orchestrate`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ target_service: targetService, auto_approve: autoApprove }),
+  });
+  return res.json();
+}
+
+export async function approveAgent(threadId: string) {
+  const res = await fetch(`${API_URL}/agent/${threadId}/approve`, {
+    method: "POST",
+  });
+  return res.json();
+}
+
+export async function getAgentState(threadId: string) {
+  const res = await fetch(`${API_URL}/agent/${threadId}/state`);
+  return res.json();
+}

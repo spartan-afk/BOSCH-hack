@@ -19,7 +19,7 @@ import asyncio
 import json
 import logging
 from datetime import datetime
-from typing import AsyncGenerator
+from typing import AsyncGenerator, Optional
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException
 from pydantic import BaseModel
@@ -49,11 +49,12 @@ _runner = None
 _planner_cls = None
 _analyzer = None
 _db = None
+_chaos_graph = None
 
 
 def init_dependencies(k8s, probe, mapper, safety, runner, planner_cls, analyzer, db):
     """Inject dependencies from the main app."""
-    global _k8s, _probe, _mapper, _safety, _runner, _planner_cls, _analyzer, _db
+    global _k8s, _probe, _mapper, _safety, _runner, _planner_cls, _analyzer, _db, _chaos_graph
     _k8s = k8s
     _probe = probe
     _mapper = mapper
@@ -62,6 +63,21 @@ def init_dependencies(k8s, probe, mapper, safety, runner, planner_cls, analyzer,
     _planner_cls = planner_cls
     _analyzer = analyzer
     _db = db
+
+    try:
+        from app.agent.graph import create_chaos_graph
+        _chaos_graph = create_chaos_graph(
+            mapper=mapper,
+            planner_cls=planner_cls,
+            safety=safety,
+            runner=runner,
+            analyzer=analyzer,
+            probe=probe,
+            db=db,
+            interrupt_for_approval=True,
+        )
+    except Exception as e:
+        logger.warning(f"Failed to initialize LangGraph chaos graph: {e}")
 
 
 # ---------------------------------------------------------------------------
@@ -442,6 +458,99 @@ async def admin_safety_check(service: str, namespace: str = "boutique"):
             "success_rate": health.success_rate,
             "p95_latency_ms": health.p95_latency_ms,
         },
+    }
+
+
+# ---------------------------------------------------------------------------
+# LangGraph Multi-Agent Orchestration
+# ---------------------------------------------------------------------------
+
+class AgentOrchestrateRequest(BaseModel):
+    target_service: Optional[str] = None
+    auto_approve: bool = False
+
+AgentOrchestrateRequest.model_rebuild()
+
+
+@router.post("/agent/orchestrate")
+async def orchestrate_agent(req: Optional[AgentOrchestrateRequest] = None):
+    """Trigger the LangGraph multi-agent chaos orchestration workflow.
+    
+    Executes through Topology Mapping -> Planning -> Safety Gate.
+    If safety passes, pauses at the Human Approval gate (unless auto_approve=True).
+    """
+    if req is None:
+        req = AgentOrchestrateRequest()
+    if not _chaos_graph:
+        raise HTTPException(503, "LangGraph orchestrator not initialized")
+
+    import uuid
+    thread_id = f"thread-{uuid.uuid4().hex[:8]}"
+    config = {"configurable": {"thread_id": thread_id}}
+
+    initial_state = {
+        "thread_id": thread_id,
+        "target_service": req.target_service,
+        "audit_log": [f"Orchestration thread {thread_id} initiated."],
+    }
+
+    # Run up to human approval or completion
+    state = await _chaos_graph.ainvoke(initial_state, config=config)
+
+    # If auto_approve requested and paused at human_approval
+    if req.auto_approve and state.get("status") == "safety_passed":
+        state = await _chaos_graph.ainvoke(None, config=config)
+
+    return {
+        "thread_id": thread_id,
+        "status": state.get("status"),
+        "chosen_spec": state.get("chosen_spec"),
+        "hypothesis": state.get("hypothesis"),
+        "safety_result": state.get("safety_result"),
+        "report": state.get("report"),
+        "audit_log": state.get("audit_log", []),
+    }
+
+
+@router.post("/agent/{thread_id}/approve")
+async def approve_agent_run(thread_id: str):
+    """Resume a paused LangGraph thread past the Human Approval checkpoint."""
+    if not _chaos_graph:
+        raise HTTPException(503, "LangGraph orchestrator not initialized")
+
+    config = {"configurable": {"thread_id": thread_id}}
+
+    try:
+        # Resume execution
+        final_state = await _chaos_graph.ainvoke(None, config=config)
+    except Exception as e:
+        logger.error(f"Error resuming thread {thread_id}: {e}")
+        raise HTTPException(500, f"Error executing workflow: {e}")
+
+    return {
+        "thread_id": thread_id,
+        "status": final_state.get("status"),
+        "report": final_state.get("report"),
+        "audit_log": final_state.get("audit_log", []),
+    }
+
+
+@router.get("/agent/{thread_id}/state")
+async def get_agent_state(thread_id: str):
+    """Retrieve current LangGraph state snapshot and audit trail for a thread."""
+    if not _chaos_graph:
+        raise HTTPException(503, "LangGraph orchestrator not initialized")
+
+    config = {"configurable": {"thread_id": thread_id}}
+    state_snapshot = _chaos_graph.get_state(config)
+
+    if not state_snapshot or not state_snapshot.values:
+        raise HTTPException(404, f"No agent state found for thread {thread_id}")
+
+    return {
+        "thread_id": thread_id,
+        "values": state_snapshot.values,
+        "next_nodes": list(state_snapshot.next),
     }
 
 
