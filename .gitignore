@@ -228,3 +228,20 @@ dist-ssr/
 *.db
 *.sqlite
 *.sqlite3
+
+# IDEs & Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Scratch / Temp directories
+temp_fleet/
+scratch/
+tmp/
+
