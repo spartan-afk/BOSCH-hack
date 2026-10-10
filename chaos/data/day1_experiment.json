@@ -1,0 +1,18 @@
+{
+  "target_link": "fleet-ingest",
+  "injected_latency_ms": 10000,
+  "stale_data_confirmed": true,
+  "aborted_by_guard": true,
+  "abort_reason": "MAX_DURATION_EXCEEDED: Experiment reached limit of 45.0s",
+  "recovery_time_s": 2.49,
+  "metrics": {
+    "phase": "injection",
+    "sample_count": 378,
+    "error_rate_pct": 0.0,
+    "p50_latency_ms": 3.55,
+    "p95_latency_ms": 22.73,
+    "mean_data_age_s": 6.996,
+    "max_data_age_s": 11.817,
+    "generated_at": "2026-10-10T09:03:00.446093+00:00"
+  }
+}

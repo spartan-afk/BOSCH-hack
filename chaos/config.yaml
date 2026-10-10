@@ -1,0 +1,34 @@
+# Chaos Engineering Configuration for Fleet Management System
+project_name: "bosch-hack"
+
+app:
+  base_url: "http://localhost:8000"
+  ingest_endpoint: "/api/fleet/telemetry/ingest"
+  vehicles_endpoint: "/api/fleet/vehicles"
+  status_endpoint: "/api/fleet/status"
+
+toxiproxy:
+  api_url: "http://localhost:8474"
+  proxy_name: "fleet-ingest"
+  proxy_host: "localhost"
+  listen_port: 8001
+  upstream: "backend:8000"
+
+hard_limits:
+  max_latency_ms: 15000
+  max_duration_s: 60
+  max_concurrent_targets: 1
+  allowed_links:
+    - "loadgen->backend"
+    - "telematics-ingest->backend"
+    - "fleet-ingest"
+  allowed_containers:
+    - "fleet-backend"
+    - "backend"
+    - "toxiproxy"
+    - "dashboard"
+
+guard:
+  default_data_age_threshold_s: 8.0
+  consecutive_breaches_to_abort: 3
+  guard_check_interval_s: 1.0

@@ -1,0 +1,22 @@
+{
+  "ranked_experiments": [
+    {
+      "target_link": "fleet-ingest",
+      "latency_ms": 10000,
+      "duration_s": 45,
+      "hypothesis": "Adding 10s latency to the ingestion proxy will cause vehicle state data age to cross 8s while backend HTTP status remains 200.",
+      "expected_blast_radius": "High data age on dashboard vehicle table; real-time alert delivery is delayed.",
+      "abort_threshold_data_age_s": 8.0,
+      "short_reason": "Primary test of telematics ingestion pipeline staleness and circuit breaker activation."
+    },
+    {
+      "target_link": "fleet-ingest",
+      "latency_ms": 4000,
+      "duration_s": 30,
+      "hypothesis": "Adding 4s moderate latency will cause telemetry updates to buffer but not trigger the 8s safety abort.",
+      "expected_blast_radius": "Moderate increase in data age from ~1s to ~4.5s; alert evaluation remains functional.",
+      "abort_threshold_data_age_s": 8.0,
+      "short_reason": "Determines margin of safety before circuit breaker threshold is breached."
+    }
+  ]
+}

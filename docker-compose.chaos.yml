@@ -1,0 +1,13 @@
+# Docker Compose Override for Chaos Testing with Toxiproxy
+services:
+  toxiproxy:
+    image: ghcr.io/shopify/toxiproxy:2.9.0
+    container_name: fleet-toxiproxy
+    ports:
+      - "8474:8474"
+      - "8001:8001"
+    labels:
+      - "com.docker.compose.project=bosch-hack"
+    command: ["-host", "0.0.0.0"]
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

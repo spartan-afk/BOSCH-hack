@@ -1,0 +1,10 @@
+{
+  "phase": "baseline",
+  "sample_count": 39,
+  "error_rate_pct": 0.0,
+  "p50_latency_ms": 4.65,
+  "p95_latency_ms": 280.42,
+  "mean_data_age_s": 0.45,
+  "max_data_age_s": 1.533,
+  "generated_at": "2026-10-10T08:53:47.978143+00:00"
+}

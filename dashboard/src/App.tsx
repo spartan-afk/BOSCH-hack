@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { FleetStatus, Vehicle, Alert, VehicleDetail } from "./types";
 import { fleetApi } from "./api";
 import { FleetHeader } from "./components/FleetHeader";
@@ -28,8 +28,6 @@ export default function App() {
 
   // Sidebar: "alerts" | "detail" | null
   const [activePanel, setActivePanel] = useState<"alerts" | "detail">("alerts");
-
-  const alertsPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // ── Data fetchers ────────────────────────────────────────────────────────
 

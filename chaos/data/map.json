@@ -1,0 +1,83 @@
+{
+  "services": [
+    {
+      "name": "backend",
+      "role": "FastAPI Telematics Ingestion & Alert Engine",
+      "ports": [
+        "8000"
+      ],
+      "criticality": 5,
+      "reason": "Core telemetry ingestion endpoint and real-time alert evaluation engine"
+    },
+    {
+      "name": "dashboard",
+      "role": "Vite React Monitoring UI",
+      "ports": [
+        "5173"
+      ],
+      "criticality": 3,
+      "reason": "Human operator visualization layer; reads state and displays alerts"
+    },
+    {
+      "name": "toxiproxy",
+      "role": "Network Latency Injector Proxy",
+      "ports": [
+        "8474",
+        "8001"
+      ],
+      "criticality": 4,
+      "reason": "Simulates network degradation and latency on ingestion link"
+    },
+    {
+      "name": "fleet-db",
+      "role": "SQLite Telematics & State Store",
+      "ports": [
+        "local file"
+      ],
+      "criticality": 4,
+      "reason": "Stores persistent vehicle metadata, recent snapshots, and alert history"
+    }
+  ],
+  "edges": [
+    {
+      "from": "loadgen",
+      "to": "toxiproxy",
+      "protocol": "HTTP/REST",
+      "purpose": "Telematics upload under latency proxy"
+    },
+    {
+      "from": "toxiproxy",
+      "to": "backend",
+      "protocol": "HTTP/REST",
+      "purpose": "Forwarding vehicle telemetry to ingestion port 8000"
+    },
+    {
+      "from": "backend",
+      "to": "fleet-db",
+      "protocol": "SQL/SQLite",
+      "purpose": "Persisting telemetry readings and generated alerts"
+    },
+    {
+      "from": "dashboard",
+      "to": "backend",
+      "protocol": "HTTP/REST",
+      "purpose": "Fetching fleet vehicle overview and live alert logs"
+    }
+  ],
+  "data_flows": [
+    {
+      "flow_name": "Telematics Ingest",
+      "source": "in-vehicle telematics / loadgen",
+      "destination": "backend:8000/api/fleet/telemetry/ingest",
+      "frequency": "1 Hz per vehicle",
+      "description": "High-frequency telemetry stream containing GPS, speed, fuel, and engine metrics"
+    },
+    {
+      "flow_name": "Vehicle State Monitoring",
+      "source": "backend:8000/api/fleet/vehicles",
+      "destination": "dashboard / observer",
+      "frequency": "1 Hz polling",
+      "description": "Periodic fetch of vehicle state and freshest timestamps"
+    }
+  ]
+}

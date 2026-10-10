@@ -1,0 +1,18 @@
+{"timestamp": "2026-10-10T08:56:45.309787+00:00", "component": "guard", "action": "PRE_FLIGHT_PASS", "reason": "All health checks passed (Backend + Toxiproxy online)", "metadata": {}}
+{"timestamp": "2026-10-10T08:56:50.562888+00:00", "component": "orchestrator", "action": "INJECT", "reason": "Injecting 10000ms latency on fleet-ingest", "metadata": {}}
+{"timestamp": "2026-10-10T08:57:51.249285+00:00", "component": "guard", "action": "ABORT", "reason": "MAX_DURATION_EXCEEDED: Experiment reached limit of 60.0s", "metadata": {"elapsed_s": 60.478549003601074}}
+{"timestamp": "2026-10-10T08:57:51.769758+00:00", "component": "orchestrator", "action": "ROLLBACK", "reason": "Toxics removed and proxy restored", "metadata": {"abort_reason": "MAX_DURATION_EXCEEDED: Experiment reached limit of 60.0s"}}
+{"timestamp": "2026-10-10T08:58:10.457392+00:00", "component": "guard", "action": "PRE_FLIGHT_PASS", "reason": "All health checks passed (Backend + Toxiproxy online)", "metadata": {}}
+{"timestamp": "2026-10-10T08:58:20.220946+00:00", "component": "orchestrator", "action": "INJECT", "reason": "Injecting 10000ms latency on fleet-ingest", "metadata": {}}
+{"timestamp": "2026-10-10T08:58:30.522441+00:00", "component": "guard", "action": "ABORT", "reason": "DATA_AGE_THRESHOLD_BREACH: Data age reached 10.81s for 3 consecutive seconds (threshold: 8.0s)", "metadata": {"max_data_age_s": 10.814, "consecutive_ticks": 3}}
+{"timestamp": "2026-10-10T08:58:31.034914+00:00", "component": "orchestrator", "action": "ROLLBACK", "reason": "Toxics removed and proxy restored", "metadata": {"abort_reason": "DATA_AGE_THRESHOLD_BREACH: Data age reached 10.81s for 3 consecutive seconds (threshold: 8.0s)"}}
+{"timestamp": "2026-10-10T09:01:32.920312+00:00", "component": "mapper", "action": "SAFE_FALLBACK", "reason": "No LLM_API_KEY set; applied system architecture dependency map", "metadata": {}}
+{"timestamp": "2026-10-10T09:01:32.922563+00:00", "component": "mapper", "action": "WRITE_MAP", "reason": "Generated dependency map with 4 services", "metadata": {}}
+{"timestamp": "2026-10-10T09:01:43.736064+00:00", "component": "mapper", "action": "PRESERVE_MAP", "reason": "Preserved existing map.json without overwriting", "metadata": {}}
+{"timestamp": "2026-10-10T09:01:56.736924+00:00", "component": "planner", "action": "SAFE_FALLBACK", "reason": "No LLM_API_KEY set; applied ranked chaos experiments plan", "metadata": {}}
+{"timestamp": "2026-10-10T09:01:56.738711+00:00", "component": "planner", "action": "WRITE_PLAN", "reason": "Generated 2 ranked experiments", "metadata": {}}
+{"timestamp": "2026-10-10T09:01:59.339775+00:00", "component": "guard", "action": "PRE_FLIGHT_PASS", "reason": "All health checks passed (Backend + Toxiproxy online)", "metadata": {}}
+{"timestamp": "2026-10-10T09:02:09.112595+00:00", "component": "orchestrator", "action": "INJECT", "reason": "Injecting 10000ms latency on fleet-ingest", "metadata": {}}
+{"timestamp": "2026-10-10T09:02:54.688955+00:00", "component": "guard", "action": "ABORT", "reason": "MAX_DURATION_EXCEEDED: Experiment reached limit of 45.0s", "metadata": {"elapsed_s": 45.35420799255371}}
+{"timestamp": "2026-10-10T09:02:55.155413+00:00", "component": "orchestrator", "action": "ROLLBACK", "reason": "Toxics removed and proxy restored", "metadata": {"abort_reason": "MAX_DURATION_EXCEEDED: Experiment reached limit of 45.0s"}}
+{"timestamp": "2026-10-10T09:03:00.460438+00:00", "component": "analyst", "action": "WRITE_SUMMARY", "reason": "Generated day1_summary.md (2374 bytes)", "metadata": {}}
