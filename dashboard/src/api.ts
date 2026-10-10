@@ -15,7 +15,7 @@ export async function fetchPlan() {
   return res.json();
 }
 
-export async function runExperiment(spec) {
+export async function runExperiment(spec: Record<string, unknown> | any) {
   const validateRes = await fetch(`${API_URL}/experiments`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

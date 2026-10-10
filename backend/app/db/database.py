@@ -86,7 +86,7 @@ class Database:
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self.engine = create_engine(f"sqlite:///{self.db_path}", echo=False)
         Base.metadata.create_all(self.engine)
-        self._session_factory = sessionmaker(bind=self.engine)
+        self._session_factory = sessionmaker(bind=self.engine, expire_on_commit=False)
 
     def session(self) -> Session:
         return self._session_factory()
